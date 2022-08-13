@@ -36,6 +36,23 @@ typedef struct Food {
     float lifetime;
 } Food;
 
+struct GameManager
+{
+    //GameManager(const unsigned int* width, const unsigned int* height);
+    void InitGame(void);
+    void UpdateGame(void);
+    void DrawGame(void);
+    void UnloadGame(void);
+
+    Camera2D* camera;
+
+    unsigned int screenWidth;
+    unsigned int screenHeight;
+    unsigned int framesCounter;
+    bool gameOver;
+    bool pause;
+};
+
 //----------------------------------------------------------------------------------
 // Global Variables Definition
 //----------------------------------------------------------------------------------

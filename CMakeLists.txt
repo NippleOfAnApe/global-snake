@@ -13,10 +13,13 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/s
 set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources/") # Define PROJECT_INCLUDE to be the path to the include directory of the project
 
 # Declaring our executable
-add_executable(${PROJECT_NAME} src/game.cpp src/map.cpp src/snake.cpp)
+add_executable(${PROJECT_NAME} src/game.cpp)
+add_subdirectory(src)
+target_include_directories(${PROJECT_NAME} PUBLIC src/)
+target_link_directories(${PROJECT_NAME} PUBLIC src/)
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib Classes)
 
 # Setting ASSETS_PATH
 target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/") # Set the asset path macro to the absolute path on the dev machine

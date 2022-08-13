@@ -1,0 +1,1 @@
+add_library(Classes main.cpp map.cpp snake.cpp)
