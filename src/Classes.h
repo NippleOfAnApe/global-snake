@@ -14,6 +14,7 @@
 //----------------------------------------------------------------------------------
 enum FoodType { REGULAR, BONUS, BOOST, TAILCUT };
 enum paletteName {WATER, SAND, ROCK, DIRT, GRASS1, GRASS2, GRASS3};
+enum camMode {INSIDE_MAP, ALWAYS_FOLLOW};
 
 struct Snake
 {
@@ -59,16 +60,22 @@ struct Food
 struct Map
 {
     void Init(void);
+    void UpdateCameraCenterInsideMap(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
+    void UpdateCameraCenter(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
     void Draw(Player* player);
+    void Unload(void);
 };
 
 struct GameManager
 {
+    GameManager(unsigned int width, unsigned int height);
+
     void InitGame(void);
     void UpdateGame(void);
     void DrawGame(void);
     void UpdateMenu(void);
     void DrawMenu(void);
+    void UpdateCamera(unsigned int cameraMode);
     void UnloadGame(void);
 
     Player* mPlayer;
@@ -101,7 +108,6 @@ extern float offMapSize;
 void CalcFruitPos(void);
 //void DrawMap(void);
 void UnloadMap(void);
-void UpdateCameraCenterInsideMap(Camera2D *camera, int screenWidth, int screenHeight);
 unsigned char** AssignColors(Color* colors);
 
 //----------------------------------------------------------------------------------

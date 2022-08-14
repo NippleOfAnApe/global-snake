@@ -5,13 +5,15 @@ Camera2D cam;
 Player player;
 Map map;
 
+GameManager::GameManager(unsigned int width, unsigned int height) : screenWidth(width), screenHeight(height)
+{
+}
+
 void GameManager::InitGame()
 {
     framesCounter = 0;
     gameOver = true;
     pause = false;
-    screenWidth = 1280;
-    screenHeight = 720;
     
     mPlayer = &player;
     mCamera = &cam;
@@ -46,9 +48,6 @@ void GameManager::UpdateGame()
 
         // // Collision
         // CalcFruitCollision();
-        
-        // //Camera updater
-        // UpdateCameraCenterInsideMap(camera, screenWidth, screenHeight);
 
         framesCounter++;
     }
@@ -101,8 +100,21 @@ void GameManager::DrawMenu(void)
     EndDrawing();
 }
 
+void GameManager::UpdateCamera(unsigned int cameraMode)
+{
+    switch (cameraMode)
+    {
+        case INSIDE_MAP:
+            mMap->UpdateCameraCenterInsideMap(mCamera, mPlayer->mSnake, screenWidth, screenHeight);
+            break;
+
+        default:
+            mMap->UpdateCameraCenter(mCamera, mPlayer->mSnake, screenWidth, screenHeight);
+    }
+}
+
 void GameManager::UnloadGame()
 {
     // TODO: Unload all dynamic loaded data (textures, sounds, models...)
-    UnloadMap();
+    mMap->Unload();
 }

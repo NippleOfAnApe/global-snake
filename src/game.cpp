@@ -21,10 +21,10 @@
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
-static const unsigned int screenWidth = 1280;
-static const unsigned int screenHeight = 720;
+static const unsigned int screenWidth = 720;
+static const unsigned int screenHeight = 900;
 
-GameManager gameManager;
+GameManager gameManager(screenWidth, screenHeight);
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -51,6 +51,7 @@ int main(void)
         if (!gameManager.gameOver)
         {
             gameManager.UpdateGame();
+            gameManager.UpdateCamera(ALWAYS_FOLLOW);
             gameManager.DrawGame();
         }
         else
