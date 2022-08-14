@@ -1,22 +1,29 @@
 #include <raylib.h>
 #include "Classes.h"
 
-Camera2D cam = { 0 };
+Camera2D cam;
+Player player;
+Map map;
 
 void GameManager::InitGame()
 {
     framesCounter = 0;
     gameOver = true;
     pause = false;
-    camera = &cam;
     screenWidth = 1280;
     screenHeight = 720;
+    
+    mPlayer = &player;
+    mCamera = &cam;
+    mMap = &map;
 
-    camera->offset = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f };
-    camera->rotation = 0.0f;
-    camera->zoom = 1.0f;
-    //InitSnake();
-    //InitMap();
+    mPlayer->Init();
+    mMap->Init();
+
+    mCamera->offset = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f };
+    mCamera->rotation = 0.0f;
+    mCamera->zoom = 1.0f;
+    mCamera->target = mPlayer->mSnake->position;
 }
 
 void GameManager::UpdateGame()
@@ -26,10 +33,10 @@ void GameManager::UpdateGame()
     if (!pause)
     {
         // // Player controls
-        // UpdateMovement(camera);
+        mPlayer->UpdateMovement();
 
         // // Snake movement
-        // MoveSnake();
+        mPlayer->MoveSnake();
 
         // // Wall collision or Collision with self
         // gameOver = CalcWallCollision() || CalcSelfCollision();
@@ -52,11 +59,11 @@ void GameManager::DrawGame()
     BeginDrawing();
 
         ClearBackground(GRAY);
-        BeginMode2D(*camera);
-        //DrawMap();
+        BeginMode2D(*mCamera);
+        mMap->Draw(mPlayer);
 
         // Draw snake
-        //DrawSnake();
+        mPlayer->DrawSnake();
     
         EndMode2D();
         if (!pause)

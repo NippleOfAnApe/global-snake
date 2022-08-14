@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <raylib.h>
 #include "Classes.h"
 #include <stdlib.h>
@@ -49,9 +50,35 @@ static int regularFruitTailIncrease = 1;
 //----------------------------------------------------------------------------------
 // Map related Functions Definition
 //----------------------------------------------------------------------------------
-void InitMap(void)
+// void InitMap(void)
+// {
+//     for (u_short i = 0; i < FOOD_ITEMS; i++) fruits[i].active = false;
+
+//     colors = LoadImageColors(LoadImage("../resources/textures/BWMap.png"));
+//     tileMapCoordinates = AssignColors(colors);
+
+//     texPalette[WATER] = LoadTexture("../resources/textures/03_Water.png");
+//     texPalette[SAND] = LoadTexture("../resources/textures/23_Sand.png");
+//     texPalette[ROCK] = LoadTexture("../resources/textures/04_Ground.png");
+//     texPalette[DIRT] = LoadTexture("../resources/textures/10_Dirt.png");
+//     texPalette[GRASS1] = LoadTexture("../resources/textures/15_Grass.png");
+//     texPalette[GRASS2] = LoadTexture("../resources/textures/18_Grass.png");
+//     texPalette[GRASS3] = LoadTexture("../resources/textures/20_Grass.png");
+
+//     bgTexture = LoadTexture("../resources/textures/04Dirt1920x1080.png");
+//     wallTexture = LoadTexture("../resources//textures/stone480.png");
+    
+//     raspberryTexture = LoadTexture("../resources/items/raspberry64.png");
+//     pineapleTexture = LoadTexture("../resources/items/pineaple64.png");
+//     sushiTexture = LoadTexture("../resources/items/sushi64.png");
+//     pizzaTexture = LoadTexture("../resources/items/pizza64.png");
+
+//     theExtra = borderWidth * 2 + offMapSize * 2;
+// }
+
+void Map::Init()
 {
-    for (u_short i = 0; i < FOOD_ITEMS; i++) fruits[i].active = false;
+    for (std::size_t i = 0; i < FOOD_ITEMS; i++) fruits[i].active = false;
 
     colors = LoadImageColors(LoadImage("../resources/textures/BWMap.png"));
     tileMapCoordinates = AssignColors(colors);
@@ -92,7 +119,7 @@ void CalcFruitPos(void)
                 fruits[i].foodType = TAILCUT;
                 fruits[i].position = (Vector2){ (float)GetRandomValue(64, mapWidth - 64), (float)GetRandomValue(64, (mapHeight - 64) - 2)};
                 fruits[i].points = minusFruitPoints;
-                fruits[i].tailIncreaseSize = -counterTail/2;
+                //fruits[i].tailIncreaseSize = -counterTail/2;
                 fruits[i].lifetime = minusFoodLifetime;
             }
             //Speed boost fruit
@@ -137,16 +164,16 @@ void CalcFruitPos(void)
     }
 }
 
-void DrawMap(void)
+void Map::Draw(Player *player)
 {
     // BG and FG
-    if (snake->tileXPos <= 1 || snake->tileXPos >= mapSize - 2 || snake->tileYPos <= 1 || snake->tileYPos >= mapSize - 2)
+    if (player->tileXPos <= 1 || player->tileXPos >= mapSize - 2 || player->tileYPos <= 1 || player->tileYPos >= mapSize - 2)
     DrawTextureTiled(bgTexture, (Rectangle){0.0f, 0.0f, 1920.0f, 1280.0f}, (Rectangle){-offMapSize - borderWidth, -offMapSize - borderWidth, mapWidth + theExtra, mapHeight + theExtra}, (Vector2){0.0f, 0.0f}, 0.0f, 1.0f, WHITE);
 
     //Clamp iterators to 0 or MAP
-    for (u_short i = MAX((snake->tileYPos - yPreLoadTile), 0); i < MIN((snake->tileYPos + yPreLoadTile + 1), mapSize); i++)
+    for (std::size_t i = MAX((player->tileYPos - yPreLoadTile), 0); i < MIN((player->tileYPos + yPreLoadTile + 1), mapSize); i++)
     {
-        for (u_short j = MAX((snake->tileXPos - xPreLoadTile), 0); j < MIN((snake->tileXPos + xPreLoadTile + 1), mapSize); j++)
+        for (std::size_t j = MAX((player->tileXPos - xPreLoadTile), 0); j < MIN((player->tileXPos + xPreLoadTile + 1), mapSize); j++)
         {
             DrawTexture(texPalette[tileMapCoordinates[i][j]], j * tileSize, i * tileSize, WHITE);
             // DrawText(TextFormat("[ %d : %d ]", j, i), j * tileSize + tileSize / 2 - (float)MeasureText(TextFormat("[ %d : %d ]", j, i), 46) / 2, i * tileSize + tileSize / 2, 46, BLACK);
@@ -164,42 +191,76 @@ void DrawMap(void)
     DrawTextureTiled(wallTexture, (Rectangle){0.0f, 0.0f, 480.0f, 480.0f}, (Rectangle){mapWidth, -borderWidth, borderWidth, mapHeight + borderWidth * 2}, (Vector2){0.0f, 0.0f}, 0.0f, .5f, WHITE);
     
     // Draw fruit to pick
-    for (u_short i = 0; i < FOOD_ITEMS; i++)
-    {
-        DrawTextureEx(*fruits[i].foodTexture, (Vector2){fruits[i].position.x - 32 * fruits[i].scale, fruits[i].position.y - 32 * fruits[i].scale}, 0, fruits[i].scale, WHITE);
-        DrawCircleLines(fruits[i].position.x, fruits[i].position.y, 32 * fruits[i].scale, RED);
-    }
+    // for (u_short i = 0; i < FOOD_ITEMS; i++)
+    // {
+    //     DrawTextureEx(*fruits[i].foodTexture, (Vector2){fruits[i].position.x - 32 * fruits[i].scale, fruits[i].position.y - 32 * fruits[i].scale}, 0, fruits[i].scale, WHITE);
+    //     DrawCircleLines(fruits[i].position.x, fruits[i].position.y, 32 * fruits[i].scale, RED);
+    // }
 }
 
-void UpdateCameraCenterInsideMap(Camera2D *camera, int screenWidth, int screenHeight)
-{
-    camera->target = snake[0].position;
-    camera->offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
-    float minX = -borderWidth - offMapSize;
-    float minY = -borderWidth - offMapSize;
-    float maxX = mapWidth + borderWidth + offMapSize;
-    float maxY = mapHeight + borderWidth + offMapSize;
+// void DrawMap(void)
+// {
+//     // BG and FG
+//     if (snake->tileXPos <= 1 || snake->tileXPos >= mapSize - 2 || snake->tileYPos <= 1 || snake->tileYPos >= mapSize - 2)
+//     DrawTextureTiled(bgTexture, (Rectangle){0.0f, 0.0f, 1920.0f, 1280.0f}, (Rectangle){-offMapSize - borderWidth, -offMapSize - borderWidth, mapWidth + theExtra, mapHeight + theExtra}, (Vector2){0.0f, 0.0f}, 0.0f, 1.0f, WHITE);
 
-    Vector2 max = GetWorldToScreen2D((Vector2){ maxX, maxY }, *camera);
-    Vector2 min = GetWorldToScreen2D((Vector2){ minX, minY }, *camera);
+//     //Clamp iterators to 0 or MAP
+//     for (u_short i = MAX((snake->tileYPos - yPreLoadTile), 0); i < MIN((snake->tileYPos + yPreLoadTile + 1), mapSize); i++)
+//     {
+//         for (u_short j = MAX((snake->tileXPos - xPreLoadTile), 0); j < MIN((snake->tileXPos + xPreLoadTile + 1), mapSize); j++)
+//         {
+//             DrawTexture(texPalette[tileMapCoordinates[i][j]], j * tileSize, i * tileSize, WHITE);
+//             // DrawText(TextFormat("[ %d : %d ]", j, i), j * tileSize + tileSize / 2 - (float)MeasureText(TextFormat("[ %d : %d ]", j, i), 46) / 2, i * tileSize + tileSize / 2, 46, BLACK);
+//             // DrawText(TextFormat("[%d : %d : %d]", colors[i * mapSize + j].r, colors[i * mapSize + j].g, colors[i * mapSize + j].b),
+//             //         j * tileSize + tileSize / 2 - (float)MeasureText(TextFormat("[%d : %d : %d]", colors[i * mapSize + j].r, colors[i * mapSize + j].g, colors[i * mapSize + j].b), 38) / 2,
+//             //         i * tileSize + tileSize / 1.5,
+//             //         38, PURPLE);
+//         }
+//     }
+
+//     // Borders
+//     DrawTextureTiled(wallTexture, (Rectangle){0.0f, 0.0f, 480.0f, 480.0f}, (Rectangle){-borderWidth, -borderWidth, mapWidth + borderWidth, borderWidth}, (Vector2){0.0f, 0.0f}, 0.0f, .5f, WHITE);
+//     DrawTextureTiled(wallTexture, (Rectangle){0.0f, 0.0f, 480.0f, 480.0f}, (Rectangle){-borderWidth, 0, borderWidth, mapHeight}, (Vector2){0.0f, 0.0f}, 0.0f, .5f, WHITE);
+//     DrawTextureTiled(wallTexture, (Rectangle){0.0f, 0.0f, 480.0f, 480.0f}, (Rectangle){-borderWidth, mapHeight, mapWidth + borderWidth, borderWidth}, (Vector2){0.0f, 0.0f}, 0.0f, .5f, WHITE);
+//     DrawTextureTiled(wallTexture, (Rectangle){0.0f, 0.0f, 480.0f, 480.0f}, (Rectangle){mapWidth, -borderWidth, borderWidth, mapHeight + borderWidth * 2}, (Vector2){0.0f, 0.0f}, 0.0f, .5f, WHITE);
     
-    if (max.x < screenWidth) camera->offset.x = screenWidth - (max.x - screenWidth/2.0f);
-    if (max.y < screenHeight) camera->offset.y = screenHeight - (max.y - screenHeight/2.0f);
-    if (min.x > 0) camera->offset.x = screenWidth/2.0f - min.x;
-    if (min.y > 0) camera->offset.y = screenHeight/2.0f - min.y;
+//     // Draw fruit to pick
+//     for (u_short i = 0; i < FOOD_ITEMS; i++)
+//     {
+//         DrawTextureEx(*fruits[i].foodTexture, (Vector2){fruits[i].position.x - 32 * fruits[i].scale, fruits[i].position.y - 32 * fruits[i].scale}, 0, fruits[i].scale, WHITE);
+//         DrawCircleLines(fruits[i].position.x, fruits[i].position.y, 32 * fruits[i].scale, RED);
+//     }
+// }
 
-    // if (camera->zoom > 1.4f) camera->zoom = 1.4f;
-    // if (camera->zoom < .7f) camera->zoom = .7f;
-}
+// void UpdateCameraCenterInsideMap(Camera2D *camera, int screenWidth, int screenHeight)
+// {
+//     camera->target = snake[0].position;
+//     camera->offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+//     float minX = -borderWidth - offMapSize;
+//     float minY = -borderWidth - offMapSize;
+//     float maxX = mapWidth + borderWidth + offMapSize;
+//     float maxY = mapHeight + borderWidth + offMapSize;
+
+//     Vector2 max = GetWorldToScreen2D((Vector2){ maxX, maxY }, *camera);
+//     Vector2 min = GetWorldToScreen2D((Vector2){ minX, minY }, *camera);
+    
+//     if (max.x < screenWidth) camera->offset.x = screenWidth - (max.x - screenWidth/2.0f);
+//     if (max.y < screenHeight) camera->offset.y = screenHeight - (max.y - screenHeight/2.0f);
+//     if (min.x > 0) camera->offset.x = screenWidth/2.0f - min.x;
+//     if (min.y > 0) camera->offset.y = screenHeight/2.0f - min.y;
+
+//     // if (camera->zoom > 1.4f) camera->zoom = 1.4f;
+//     // if (camera->zoom < .7f) camera->zoom = .7f;
+// }
 
 unsigned char** AssignColors(Color* colors)
 {
     unsigned char** collArray = (unsigned char**) RL_MALLOC(mapSize * sizeof(unsigned char*));
-    for (u_short i = 0; i < mapSize; i++) collArray[i] = (unsigned char*) RL_MALLOC(mapSize * sizeof(unsigned char));
+    for (std::size_t i = 0; i < mapSize; i++) collArray[i] = (unsigned char*) RL_MALLOC(mapSize * sizeof(unsigned char));
 
-    for (u_short y = 0; y < mapSize; y++)
+    for (std::size_t y = 0; y < mapSize; y++)
     {
-        for (u_short x = 0; x < mapSize; x++)
+        for (std::size_t x = 0; x < mapSize; x++)
         {
             if (colors[y * mapSize + x].b >= 220 &&
                 colors[y * mapSize + x].r <= 220 &&
@@ -219,7 +280,7 @@ unsigned char** AssignColors(Color* colors)
 void UnloadMap(void)
 {
     UnloadTexture(bgTexture);
-    for (u_short i = 0; i < 6; i++) UnloadTexture(texPalette[i]);
+    for (std::size_t i = 0; i < 6; i++) UnloadTexture(texPalette[i]);
     UnloadTexture(wallTexture);
     UnloadTexture(raspberryTexture);
     UnloadTexture(pineapleTexture);
