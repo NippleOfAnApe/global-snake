@@ -48,8 +48,16 @@ int main(void)
     {
         // Update and Draw
         //----------------------------------------------------------------------------------
-        gameManager.UpdateGame();
-        gameManager.DrawGame();
+        if (!gameManager.gameOver)
+        {
+            gameManager.UpdateGame();
+            gameManager.DrawGame();
+        }
+        else
+        {
+            gameManager.UpdateMenu();
+            gameManager.DrawMenu();
+        }
         //----------------------------------------------------------------------------------
     }
 #endif

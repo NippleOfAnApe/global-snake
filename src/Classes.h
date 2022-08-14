@@ -1,5 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
+#include <raylib.h>
 //----------------------------------------------------------------------------------
 // Some Defines
 //----------------------------------------------------------------------------------
@@ -11,11 +12,11 @@
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum FoodType { REGULAR, BONUS, BOOST, TAILCUT } FoodType;
+enum FoodType { REGULAR, BONUS, BOOST, TAILCUT };
 enum paletteName {WATER, SAND, ROCK, DIRT, GRASS1, GRASS2, GRASS3};
 
 
-typedef struct Snake {
+struct Snake {
     Vector2 position;
     unsigned short tileXPos;
     unsigned short tileYPos;;
@@ -23,9 +24,9 @@ typedef struct Snake {
     float size;
     Vector2 speed;
     Color color;
-} Snake;
+};
 
-typedef struct Food {
+struct Food {
     Vector2 position;
     Texture2D* foodTexture;
     float scale;
@@ -34,14 +35,15 @@ typedef struct Food {
     int points;
     int tailIncreaseSize;
     float lifetime;
-} Food;
+};
 
 struct GameManager
 {
-    //GameManager(const unsigned int* width, const unsigned int* height);
     void InitGame(void);
     void UpdateGame(void);
     void DrawGame(void);
+    void UpdateMenu(void);
+    void DrawMenu(void);
     void UnloadGame(void);
 
     Camera2D* camera;
@@ -67,17 +69,6 @@ extern const float mapWidth;
 extern const float mapHeight;
 extern float borderWidth;
 extern float offMapSize;
-
-
-//------------------------------------------------------------------------------------
-// Main Functions Declaration
-//------------------------------------------------------------------------------------
-void InitGame(void);         // Initialize game
-void UpdateGame(void);       // Update game (one frame)
-void DrawGame(void);         // Draw game (one frame)
-void UnloadGame(void);       // Unload game
-void UpdateDrawFrame(void);  // Update and Draw (one frame)
-void DrawUI(void);
 
 //----------------------------------------------------------------------------------
 // Map Functions Declaration
