@@ -1,126 +1,142 @@
 #ifndef MAP_H
 #define MAP_H
-#include <raylib.h>
+
 //----------------------------------------------------------------------------------
 // Some Defines
 //----------------------------------------------------------------------------------
-#define SNAKE_LENGTH   512
-#define FOOD_ITEMS      100
+
+#define SNAKE_LENGTH    512
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+
 //----------------------------------------------------------------------------------
-// Types and Structures Definition
+// Enums
 //----------------------------------------------------------------------------------
+
 enum FoodType { REGULAR, BONUS, BOOST, TAILCUT };
 enum paletteName {WATER, SAND, ROCK, DIRT, GRASS1, GRASS2, GRASS3};
 enum camMode {INSIDE_MAP, ALWAYS_FOLLOW};
 
+//----------------------------------------------------------------------------------
+// Structs
+//----------------------------------------------------------------------------------
+
 struct Snake
 {
-    void Init(void);
-
     Vector2 position;
-    float size;
     Vector2 speed;
+    float radius;
     Color color;
-};
-
-struct Player
-{
-    void Init(void);
-    void UpdateMovement(void);
-    void MoveSnake(void);
-    void DrawSnake(void);
-
-
-    Snake* mSnake;
-
-    unsigned short score;
-    unsigned int counterTail;
-    Vector2 currentSpeed;
-    bool accelerating;
-    unsigned short tileXPos;
-    unsigned short tileYPos;
-    float boostCapacity;
 };
 
 struct Food
 {
     Vector2 position;
     Texture2D* foodTexture;
-    float scale;
-    int foodType;
+    unsigned short foodType;
+    short points;
+    float radius;
     bool active;
-    int points;
-    int tailIncreaseSize;
+    short tailIncreaseSize;
     float lifetime;
 };
 
-struct Map
+//----------------------------------------------------------------------------------
+// Classes
+//----------------------------------------------------------------------------------
+
+class Player
 {
-    void Init(void);
-    void UpdateCameraCenterInsideMap(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
-    void UpdateCameraCenter(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
-    void Draw(Player* player);
-    void Unload(void);
+    public:
+        void Init(void);
+        void UpdateMovement(void);
+        void MoveSnake(void);
+        void CutTail(void);
+        void IncreaseTail(unsigned short size);
+        void IncreaseSnakeRadius(void);
+        bool CalcWallCollision(float* dimensions);
+        bool CalcSelfCollision(void);
+        void DrawSnake(void);
+        void UpdateTilePos(unsigned short tileSize);
+
+        unsigned short GetScore(void) const;
+        unsigned short GetCounterTail(void) const;
+        float GetBoost(void) const;
+
+        //Set = Update. Add "value" to to existing value
+        void SetScore(unsigned short value);
+        void SetCounterTail(unsigned short value);
+        void SetBoost(float value);
+
+        Snake* mSnake;
+        unsigned short tileXPos;
+        unsigned short tileYPos;
+
+    private:
+        unsigned short score;
+        unsigned short counterTail;
+        float boostCapacity;
+        Vector2 currentSpeed;
+        bool accelerating;
 };
 
-struct GameManager
+class FoodManager
 {
-    GameManager(unsigned int width, unsigned int height);
-
-    void InitGame(void);
-    void UpdateGame(void);
-    void DrawGame(void);
-    void UpdateMenu(void);
-    void DrawMenu(void);
-    void UpdateCamera(unsigned int cameraMode);
-    void UnloadGame(void);
-
-    Player* mPlayer;
-    Camera2D* mCamera;
-    Map* mMap;
-
-    unsigned int screenWidth;
-    unsigned int screenHeight;
-    unsigned int framesCounter;
-    bool gameOver;
-    bool pause;
+    public:
+        void Init(void);
+        void Unload(void);
+        void CalcFruitPos(Snake* snake, unsigned int maxX, unsigned int maxY);
+        bool FruitIsOnSnake(Food* fruit, Snake* snake);
+        void CalcFruitCollision(Player* player);
+        void DrawFruits(void);
+        
+        Food* mFood;
 };
 
-//----------------------------------------------------------------------------------
-// Global Variables Definition
-//----------------------------------------------------------------------------------
+class Map
+{
+    public:
+        void Init(void);
+        unsigned char** AssignColors(Color* colors);
+        float* GetDimensions(void);     //1 - borderWidth, 2 - mapWidth, 3 - mapHight. I know it's inconvenient
+        void UpdateCameraCenterInsideMap(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
+        void UpdateCameraCenter(Camera2D* camera, Snake* target, const float screenWidth, const float screenHeight);
+        void Draw(Player* player);
+        void Unload(void);
 
-extern Food fruits[FOOD_ITEMS];
-extern const float tileSize;
+        unsigned short mapPX;
+        float tileSize;
+        float mapWidth;
+        float mapHeight;
+};
 
-extern const float mapWidth;
-extern const float mapHeight;
-extern float borderWidth;
-extern float offMapSize;
+class GameManager
+{
+    public:
+        GameManager(unsigned int width, unsigned int height);
 
-//----------------------------------------------------------------------------------
-// Map Functions Declaration
-//----------------------------------------------------------------------------------
-//void InitMap(void);
-void CalcFruitPos(void);
-//void DrawMap(void);
-void UnloadMap(void);
-unsigned char** AssignColors(Color* colors);
+        void InitGame(void);
+        void UpdateGame(void);
+        void DrawGame(void);
+        void DrawUI(void);
+        void MainMenu(void);
+        void DrawMenu(void);
+        void UpdateCamera(unsigned char cameraMode);
+        void UnloadGame(void);
+        bool GameOver(void) const;
 
-//----------------------------------------------------------------------------------
-// Snake Functions Declaration
-//----------------------------------------------------------------------------------
-//void InitSnake(void);
-//void SetSnakeAsCameraTarget(Camera2D *camera);
-//void UpdateMovement(Camera2D *camera);
-bool CalcWallCollision(void);
-bool CalcSelfCollision(void);
-void CalcFruitCollision(void);
-void DrawSnake(void);
-//void MoveSnake(void);
-bool FruitIsOnSnake(Food fruit);
+        Player* mPlayer;
+        FoodManager* mFoodManager;
+        Camera2D* mCamera;
+        Map* mMap;
+        unsigned int screenWidth;
+        unsigned int screenHeight;
+
+    private:
+        unsigned int framesCounter;
+        bool gameOver;
+        bool pause;
+};
 
 #endif

@@ -10,16 +10,14 @@
 ********************************************************************************************/
 
 #include <raylib.h>
-#include <raymath.h>
 #include "Classes.h"
-#include <stdbool.h>
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
 #endif
 
 //------------------------------------------------------------------------------------
-// Global Variables Declaration
+// Variables Declaration
 //------------------------------------------------------------------------------------
 static const unsigned int screenWidth = 720;
 static const unsigned int screenHeight = 900;
@@ -29,10 +27,9 @@ GameManager gameManager(screenWidth, screenHeight);
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main(void)
+int main()
 {
-    //SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Make the window resizable
-    // Initialization (Note windowTitle is unused on Android)
+    //SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Potentially might break the whole game
     //---------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "My Snake");
     gameManager.InitGame();
@@ -40,15 +37,14 @@ int main(void)
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
+
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose())
     {
-        // Update and Draw
-        //----------------------------------------------------------------------------------
-        if (!gameManager.gameOver)
+        if (!gameManager.GameOver())
         {
             gameManager.UpdateGame();
             gameManager.UpdateCamera(ALWAYS_FOLLOW);
@@ -56,14 +52,14 @@ int main(void)
         }
         else
         {
-            gameManager.UpdateMenu();
+            gameManager.MainMenu();
             gameManager.DrawMenu();
         }
         //----------------------------------------------------------------------------------
     }
+
 #endif
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
+
     gameManager.UnloadGame();         // Unload loaded data (textures, sounds, models...)
 
     CloseWindow();        // Close window and OpenGL context
